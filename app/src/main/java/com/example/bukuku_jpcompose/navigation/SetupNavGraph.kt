@@ -56,5 +56,7 @@ fun SetupNavGraph(navController: NavHostController, modifier: Modifier = Modifie
         composable(route = Screen.Register.route) {
             RegisterScreen(navController)
         }
+
+
     }
 }
