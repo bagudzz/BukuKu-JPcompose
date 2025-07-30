@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,6 +49,9 @@ fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
     val itemsMenu = listOf(
         BottomNavItem(Screen.Home.route) {
             Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
+        },
+        BottomNavItem(Screen.Collection.route) {
+            Icon(imageVector = Icons.Default.List, contentDescription = "Collection")
         },
         BottomNavItem(Screen.Profile.route) {
             Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile")

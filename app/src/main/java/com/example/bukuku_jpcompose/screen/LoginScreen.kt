@@ -68,6 +68,15 @@ fun LoginScreen(navController: NavHostController) {
                 .imePadding(), // Memberi ruang tambahan ketika keyboard muncul
             verticalArrangement = Arrangement.Center
         ) {
+            // logo login
+            Image(
+                painter = painterResource(id = R.drawable.logo_bukuku),
+                contentDescription = "Logo BukuMu",
+                modifier = Modifier
+                    .size(130.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 40.dp)
+            )
             // Judul halaman login
             Text(
                 text = "Login",

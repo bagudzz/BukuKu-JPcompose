@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     // Alamat dasar (base URL) dari backend API
-    private const val BASE_URL = "https://notes-app-rosy-phi.vercel.app/"
+    private const val BASE_URL = "http://192.168.1.38:3000/"
     /**
      * Objek `instance` memberikan akses ke implementasi `ApiService`.
      * Inisialisasi dilakukan secara lazy untuk efisiensi.

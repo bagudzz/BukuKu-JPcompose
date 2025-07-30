@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,6 +46,7 @@ fun RegisterScreen(navController: NavHostController) {
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
     var confirmPasswordError by remember { mutableStateOf(false) }
+    var serverErrorMessage by remember { mutableStateOf("") }
 
     // State untuk menampilkan indikator loading selama proses registrasi
     var isLoading by remember { mutableStateOf(false) }
@@ -70,9 +73,11 @@ fun RegisterScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .imePadding(), // Menyesuaikan layout agar tidak tertutup keyboard
-            verticalArrangement = Arrangement.Center
+                .imePadding()
+                .verticalScroll(rememberScrollState()), // Menyesuaikan layout agar tidak tertutup keyboard
+            verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(80.dp))
             Text(
                 text = "Register",
                 style = MaterialTheme.typography.headlineMedium
@@ -135,14 +140,23 @@ fun RegisterScreen(navController: NavHostController) {
                 onValueChange = {
                     email = it
                     emailError = false
+                    serverErrorMessage = ""
                 },
-                isError = emailError,
+                isError = emailError|| serverErrorMessage.isNotEmpty(),
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
             if (emailError) {
                 Text(
                     "Email tidak valid",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+            // pesan error dari server (misal email sudah digunakan)
+            if (serverErrorMessage.isNotEmpty()) {
+                Text(
+                    serverErrorMessage,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelSmall
                 )
@@ -205,6 +219,7 @@ fun RegisterScreen(navController: NavHostController) {
                     emailError = email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
                     passwordError = password.isBlank()
                     confirmPasswordError = confirmPassword != password
+                    serverErrorMessage = ""
 
                     // Jika semua input valid, lakukan registrasi
                     if (!fullNameError && !usernameError && !emailError && !passwordError && !confirmPasswordError) {
@@ -234,8 +249,12 @@ fun RegisterScreen(navController: NavHostController) {
                                     }
                                 } else {
                                     val errorMsg = body?.message ?: response.message()
-                                    Toast.makeText(context, "Gagal: $errorMsg", Toast.LENGTH_LONG)
-                                        .show()
+                                    //Tampilkan error email sudah digunakan
+                                    if (response.code() == 409) {
+                                        serverErrorMessage = "Email sudah digunakan"
+                                    } else {
+                                        serverErrorMessage = errorMsg
+                                    }
                                 }
                             } catch (e: Exception) {
                                 isLoading = false

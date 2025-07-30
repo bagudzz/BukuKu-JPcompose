@@ -14,12 +14,13 @@ sealed class Screen(val route: String) {
      */
     object Home : Screen(route = "home")
 
+    object  Collection : Screen(route = "collection")
     /**
      * Objek untuk halaman Result.
-     * Route-nya memiliki argumen dinamis "text".
+     * Route-nya memiliki argumen dinamis "title".
      * Misalnya: "result/HaloDunia"
      */
-    object Result : Screen(route = "result/{text}") {
+    object Result : Screen(route = "result/{title}") {
         /**
          * Fungsi untuk membuat route lengkap dengan nilai parameter.
          *

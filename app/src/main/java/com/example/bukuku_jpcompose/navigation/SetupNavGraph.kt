@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.bukuku_jpcompose.screen.CollectionScreen
 import com.example.bukuku_jpcompose.screen.HomeScreen
 import com.example.bukuku_jpcompose.screen.LoginScreen
 import com.example.bukuku_jpcompose.screen.ProfileScreen
@@ -29,16 +30,31 @@ fun SetupNavGraph(navController: NavHostController, modifier: Modifier = Modifie
             HomeScreen(navController)
         }
 
-        // Halaman Result, membutuhkan parameter "text"
+        // Halaman Result, membutuhkan parameter "title"
         composable(
-            route = Screen.Result.route,
-            arguments = listOf(navArgument("text") {
-                type = NavType.StringType // Tipe parameter: String
-            })
-        ) {
-            // Mengambil argumen "text" dari route dan mengirim ke ResultScreen
-            ResultScreen(it.arguments?.getString("text").toString(), navController)
+            route = "result/{title}/{desc}/{image}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("desc") { type = NavType.StringType },
+                navArgument("image") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: ""
+            val desc = backStackEntry.arguments?.getString("desc") ?: ""
+            val image = backStackEntry.arguments?.getString("image") ?: ""
+            ResultScreen(title = title, description = desc, imageUrl = image, navController = navController)
         }
+
+//        composable(
+//            route = Screen.Result.route,
+//            arguments = listOf(navArgument("title") {
+//                type = NavType.StringType // Tipe parameter: String
+//            })
+//        ) {
+//            // Mengambil argumen "text" dari route dan mengirim ke ResultScreen
+//            val  title = it.arguments?.getString("title") ?: ""
+//            ResultScreen(it.arguments?.getString("title").toString(), navController)
+//        }
 
         // Halaman Profile
         composable(
@@ -55,6 +71,11 @@ fun SetupNavGraph(navController: NavHostController, modifier: Modifier = Modifie
         // Halaman Register
         composable(route = Screen.Register.route) {
             RegisterScreen(navController)
+        }
+
+        //Halaman CollectionScreen
+        composable(Screen.Collection.route) {
+            CollectionScreen(navController)
         }
 
 

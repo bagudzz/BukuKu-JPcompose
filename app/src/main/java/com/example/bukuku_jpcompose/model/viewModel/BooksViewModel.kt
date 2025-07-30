@@ -1,6 +1,9 @@
 package com.example.bukuku_jpcompose.model.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bukuku_jpcompose.model.response.BookItem
@@ -31,5 +34,20 @@ class BooksViewModel : ViewModel() {
                 _books.value = emptyList() // fallback kalau API gagal
             }
         }
+    }
+
+    // Koleksi buku favorit (bisa dari mutableStateList atau LiveData)
+    private val _collection = mutableStateListOf<BookItem>()
+    val collection: List<BookItem> get() = _collection
+    val collectionState: State<List<BookItem>> get() = derivedStateOf { _collection }
+
+    fun addToCollection(book: BookItem) {
+        if (!_collection.contains(book)) {
+            _collection.add(book)
+        }
+    }
+
+    fun removeFromCollection(book: BookItem) {
+        _collection.remove(book)
     }
 }

@@ -8,5 +8,5 @@ interface BooksApiService {
 
     // Contoh: https://www.googleapis.com/books/v1/volumes?q=android
     @GET("volumes")
-    suspend fun getBooks(@Query("q") query: String = "android" ): BooksResponse// Default pencarian
+    suspend fun getBooks(@Query("q") query: String = "buku" ): BooksResponse// Default pencarian
 }
