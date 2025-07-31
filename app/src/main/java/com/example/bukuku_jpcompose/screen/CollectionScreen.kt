@@ -6,24 +6,44 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
 import com.example.bukuku_jpcompose.model.response.BookItem
+import com.example.bukuku_jpcompose.model.response.CollectionBook
+import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
+import com.example.bukuku_jpcompose.model.viewModel.BooksViewModelPreview
+import com.example.bukuku_jpcompose.utils.PreferenceManager
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionScreen(
     navController: NavController,
-    viewModel: BooksViewModel = viewModel()
+    viewModel: BooksViewModel,
+    userToken: String
 ) {
-    val collection by viewModel.collectionState
+    // ✅ Ambil koleksi dari StateFlow (API atau lokal)
+    val collection by viewModel.collectionState.collectAsState()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+
+        val token = PreferenceManager.getToken(context)?: ""
+        viewModel.fetchCollection(token)
+
+    }
 
     Scaffold(
         topBar = {
@@ -39,7 +59,7 @@ fun CollectionScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Belum ada buku dalam koleksi.")
+                CircularProgressIndicator()
             }
         } else {
             LazyColumn(
@@ -51,7 +71,9 @@ fun CollectionScreen(
             ) {
                 items(collection) { book ->
                     BookCard(book = book, onRemove = {
-                        viewModel.removeFromCollection(book)
+                        viewModel.removeFromCollection(
+                            bookId =book.id ?: "",
+                            userToken=userToken)
                     })
                 }
             }
@@ -60,20 +82,18 @@ fun CollectionScreen(
 }
 
 @Composable
-fun BookCard(book: BookItem, onRemove: () -> Unit) {
-    val volumeInfo = book.volumeInfo
-    val imageUrl = volumeInfo.imageLinks?.thumbnail ?: ""
+fun BookCard(book: CollectionBook, onRemove: () -> Unit) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(volumeInfo.title, style = MaterialTheme.typography.titleMedium)
+            Text(book.title, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Image(
-                painter = rememberAsyncImagePainter(imageUrl),
-                contentDescription = volumeInfo.title,
+                painter = rememberAsyncImagePainter(book.thumbnail),
+                contentDescription = book.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp),
@@ -81,7 +101,7 @@ fun BookCard(book: BookItem, onRemove: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = volumeInfo.description,
+                text = book.description,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 3
             )

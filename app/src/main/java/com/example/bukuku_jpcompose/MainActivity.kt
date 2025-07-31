@@ -9,7 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
+import com.example.bukuku_jpcompose.model.viewModel.BooksViewModelPreview
 import com.example.bukuku_jpcompose.ui.theme.bukukutheme
 
 class MainActivity : ComponentActivity() {
@@ -30,8 +33,18 @@ class MainActivity : ComponentActivity() {
                 // Membuat controller navigasi untuk mengatur halaman
                 val navController = rememberNavController()
 
-                // Menampilkan UI utama aplikasi
-                MyApp(navController)
+                // ✅ Buat 1 instance global ViewModel
+                val booksViewModel: BooksViewModel = viewModel()
+
+                val userToken = "real_or_dummy_token"
+
+                // ✅ Oper ke MyApp
+                MyApp(
+                    navController = navController,
+                    viewModel = booksViewModel,
+                    userToken = userToken
+                )
+
             }
         }
     }
@@ -48,7 +61,14 @@ fun GreetingPreview() {
         // Membuat navController sementara untuk preview
         val navController = rememberNavController()
 
+        // ✅ Gunakan instance dummy untuk preview
+        val previewViewModel = BooksViewModelPreview()
+
         // Menampilkan UI utama di preview
-        MyApp(navController)
+        MyApp(
+            navController = navController,
+            viewModel = previewViewModel,
+            userToken = "dummy_preview_token"
+        )
     }
 }

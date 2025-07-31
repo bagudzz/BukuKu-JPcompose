@@ -1,23 +1,31 @@
 package com.example.bukuku_jpcompose.service.api
 
+import com.example.bukuku_jpcompose.model.request.BookItemRequest
 import com.example.bukuku_jpcompose.model.response.BookItem
+import com.example.bukuku_jpcompose.model.response.BooksResponseWithMessage
+import com.example.bukuku_jpcompose.model.response.CollectionResponse
+import retrofit2.Response
 import retrofit2.http.*
 
 interface CollectionApiService {
-    @GET("collection")
-    suspend fun getCollection(
+
+    // ✅ Ambil semua koleksi user
+    @GET("api/collection")
+    suspend fun getUserCollection(
         @Header("Authorization") token: String
-    ): List<BookItem>
+    ): Response<CollectionResponse>
 
-    @POST("collection")
-    suspend fun addBook(
+    // ✅ Tambah buku ke koleksi user
+    @POST("api/collection")
+    suspend fun addBookToCollection(
         @Header("Authorization") token: String,
-        @Body book: BookItem
-    )
+        @Body book: BookItemRequest
+    ): Response<BooksResponseWithMessage>
 
-    @HTTP(method = "DELETE", path = "collection", hasBody = true)
-    suspend fun deleteBook(
+    // ✅ Hapus buku dari koleksi user
+    @HTTP(method = "DELETE", path = "api/collection", hasBody = true)
+    suspend fun removeBookFromCollection(
         @Header("Authorization") token: String,
-        @Body body: Map<String, String>
-    )
+        @Body body: Map<String, String> // kirim { "id_book": "xxxx" }
+    ): Response<Unit>
 }

@@ -23,8 +23,14 @@ import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
 @Composable
 fun HomeScreen(navController: NavController,
                viewModel: BooksViewModel = viewModel()) {
-                    val books by viewModel.books.collectAsState()
 
+
+    val books by viewModel.bukuState.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchBooks("android")  // 🔥 bisa ganti keyword sesuai pencarian
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,10 +50,11 @@ fun HomeScreen(navController: NavController,
                 items(books) { book ->
                     BookItemView(book){
                         //navigasi ke halaman detail
+                        val idbook = Uri.encode(book.id)
                         val title = Uri.encode(book.volumeInfo.title)
                         val desc = Uri.encode(book.volumeInfo.description ?: "Tidak ada deskripsi")
                         val img = Uri.encode(book.volumeInfo.imageLinks?.thumbnail ?: "")
-                        navController.navigate("result/$title/$desc/$img")
+                        navController.navigate("result/$idbook/$title/$desc/$img")
 //                        navController.navigate("result/${Uri.encode(book.volumeInfo.title)}")
                     }
                 }

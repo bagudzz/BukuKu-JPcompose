@@ -41,7 +41,7 @@ data class BottomNavItem(
  * @param modifier modifier opsional untuk penyesuaian tampilan luar komponen.
  */
 @Composable
-fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier) {
+fun BottomBar(navController: NavHostController, modifier: Modifier = Modifier, userToken: String) {
     // Mendapatkan route halaman yang sedang aktif
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -151,5 +151,8 @@ fun BottomBarItem(
 @Preview(showBackground = true)
 @Composable
 fun BottomBarPreview() {
-    BottomBar(navController = rememberNavController())
+    BottomBar(
+        navController = rememberNavController(),
+        userToken = "dummy_preview_token"
+    )
 }

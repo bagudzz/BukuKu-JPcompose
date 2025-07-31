@@ -11,9 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.bukuku_jpcompose.components.BottomBar
+import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
 import com.example.bukuku_jpcompose.navigation.Screen
 import com.example.bukuku_jpcompose.navigation.SetupNavGraph
 
@@ -24,7 +26,11 @@ import com.example.bukuku_jpcompose.navigation.SetupNavGraph
  * @param navController controller navigasi yang mengelola perpindahan antar layar.
  */
 @Composable
-fun MyApp(navController: NavHostController) {
+fun MyApp(
+    navController: NavHostController,
+    viewModel: BooksViewModel,
+    userToken: String,
+) {
     // Mengambil entry (halaman) aktif saat ini dari backstack
     val currentBackStack by navController.currentBackStackEntryAsState()
 
@@ -46,6 +52,7 @@ fun MyApp(navController: NavHostController) {
                 if (showBottomBar) {
                     BottomBar(
                         navController = navController,
+                        userToken = userToken,
                         modifier = Modifier
                             .windowInsetsPadding(WindowInsets.navigationBars) // Beri padding agar tidak bentrok dengan sistem navigasi Android
                     )
@@ -55,6 +62,8 @@ fun MyApp(navController: NavHostController) {
             // Menampilkan isi halaman (konten utama) berdasarkan konfigurasi navigasi
             SetupNavGraph(
                 navController = navController,
+                viewModel = viewModel,
+                userToken = userToken,
                 modifier = Modifier.padding(contentPadding) // Menyesuaikan padding dari Scaffold
             )
         }
