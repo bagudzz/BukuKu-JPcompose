@@ -38,7 +38,7 @@ fun MyApp(
     val currentRoute = currentBackStack?.destination?.route
 
     // Menentukan apakah bottom bar perlu ditampilkan berdasarkan halaman yang sedang aktif
-    val showBottomBar = currentRoute in listOf(Screen.Home.route, Screen.Profile.route)
+    val showBottomBar = currentRoute in listOf(Screen.Home.route,Screen.Collection.route, Screen.Profile.route)
 
     // Box sebagai wadah utama layout
     Box(modifier = Modifier.fillMaxSize()) {

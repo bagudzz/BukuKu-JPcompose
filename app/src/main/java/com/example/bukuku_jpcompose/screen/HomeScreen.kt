@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,16 +28,37 @@ fun HomeScreen(navController: NavController,
 
 
     val books by viewModel.bukuState.collectAsState()
-
+    // 🔹 State untuk Search
+    var searchQuery by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchBooks("android")  // 🔥 bisa ganti keyword sesuai pencarian
+        viewModel.fetchBooks("all")
     }
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 26.dp)
     ) {
+        // ✅ Search Bar
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = {
+                searchQuery = it
+                viewModel.fetchBooks(it)},
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Cari Judul Buku") },
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = {
+                    if (searchQuery.isNotBlank()) {
+                        viewModel.fetchBooks(searchQuery)
+                    }
+                }) {
+                    Icon(Icons.Default.Search, contentDescription = "Cari")
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         if (books.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -90,7 +113,7 @@ fun BookItemView(book: BookItem, onClick: () -> Unit) {
                 contentDescription = info.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(90.dp)
                     .padding(end = 16.dp)
             )
 
@@ -100,7 +123,7 @@ fun BookItemView(book: BookItem, onClick: () -> Unit) {
                 Text(
                     text = info.description ?: "Tidak ada deskripsi",
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2
+                    maxLines = 1
                 )
             }
         }

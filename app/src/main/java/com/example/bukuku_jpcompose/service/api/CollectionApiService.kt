@@ -7,6 +7,10 @@ import com.example.bukuku_jpcompose.model.response.CollectionResponse
 import retrofit2.Response
 import retrofit2.http.*
 
+data class DeleteRequest(
+    val id_book: String
+)
+
 interface CollectionApiService {
 
     // ✅ Ambil semua koleksi user
@@ -24,8 +28,8 @@ interface CollectionApiService {
 
     // ✅ Hapus buku dari koleksi user
     @HTTP(method = "DELETE", path = "api/collection", hasBody = true)
-    suspend fun removeBookFromCollection(
+    suspend fun deleteBookFromCollection(
         @Header("Authorization") token: String,
-        @Body body: Map<String, String> // kirim { "id_book": "xxxx" }
+        @Body body: Map<String, String>
     ): Response<Unit>
 }

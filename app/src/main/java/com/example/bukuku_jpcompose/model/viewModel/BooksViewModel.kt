@@ -8,6 +8,7 @@ import com.example.bukuku_jpcompose.model.response.BookItem
 import com.example.bukuku_jpcompose.model.response.CollectionBook
 import com.example.bukuku_jpcompose.service.api.BooksApiClient
 import com.example.bukuku_jpcompose.service.api.CollectionApiClient
+import com.example.bukuku_jpcompose.service.api.DeleteRequest
 import com.example.bukuku_jpcompose.utils.PreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,9 +28,10 @@ open class BooksViewModel : ViewModel() {
 
 
 
-    fun fetchBooks(query: String) {
+    fun fetchBooks(query: String="") {
         viewModelScope.launch {
             try {
+                val keyword = if (query.isBlank()) "all" else query
                 val response = BooksApiClient.instance.getBooks(query)
                 val items = response.items ?: emptyList()
                 _bukuState.value = items
@@ -74,13 +76,33 @@ open class BooksViewModel : ViewModel() {
     }
 
     // ✅ Hapus buku dari koleksi
-    open fun removeFromCollection(bookId: String, userToken: String) {
+    open fun deleteFromCollection(bookId: String, userToken: String) {
         viewModelScope.launch {
-            val currentList = _collectionState.value.toMutableList()
-            currentList.removeAll { it.id == bookId }
-            _collectionState.value = currentList
+            try {
+                val tokenHeader = if (userToken.startsWith("Bearer")) userToken else "Bearer $userToken"
+                println("DEBUG: Call API DELETE dengan token=$tokenHeader")
+
+                val response = CollectionApiClient.instance.deleteBookFromCollection(
+                    tokenHeader,
+                    mapOf("id_book" to bookId)
+                )
+
+                println("DEBUG: Response DELETE code=${response.code()} body=${response.body()}")
+
+                if (response.isSuccessful) {
+                    _collectionState.value = _collectionState.value.filterNot { it.id_book == bookId }
+                    _getCollectionMessageState.value = "Buku berhasil dihapus"
+                } else {
+                    _getCollectionMessageState.value = "Gagal menghapus buku (${response.code()})"
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("DEBUG: ERROR CALL DELETE API ${e.message}")
+                _getCollectionMessageState.value = "Error: ${e.message}"
+            }
         }
     }
+
 
     // ✅ Fungsi protected untuk digunakan di Preview
     protected fun addDummyInternal(book: BookItem) {

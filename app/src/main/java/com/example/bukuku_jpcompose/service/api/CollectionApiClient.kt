@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  * Singleton Retrofit client untuk Collection API.
  */
 object CollectionApiClient {
-    private const val BASE_URL = "http://192.168.1.38:3000/" // ✅ ganti dengan URL API Next.js kamu
+    private const val BASE_URL = "http://192.168.1.10:3000/" // ✅URL API Next.js
 
     val instance: CollectionApiService by lazy {
         Retrofit.Builder()

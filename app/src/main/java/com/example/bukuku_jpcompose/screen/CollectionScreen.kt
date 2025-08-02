@@ -59,7 +59,7 @@ fun CollectionScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+//                CircularProgressIndicator()
             }
         } else {
             LazyColumn(
@@ -71,9 +71,10 @@ fun CollectionScreen(
             ) {
                 items(collection) { book ->
                     BookCard(book = book, onRemove = {
-                        viewModel.removeFromCollection(
-                            bookId =book.id ?: "",
-                            userToken=userToken)
+                        scope.launch {
+                            val t = PreferenceManager.getToken(context) ?: ""
+                            viewModel.deleteFromCollection(book.id_book ?: "", t)
+                        }
                     })
                 }
             }
@@ -109,6 +110,7 @@ fun BookCard(book: CollectionBook, onRemove: () -> Unit) {
             Button(
                 onClick = onRemove,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+
             ) {
                 Text("Hapus dari Koleksi")
             }
