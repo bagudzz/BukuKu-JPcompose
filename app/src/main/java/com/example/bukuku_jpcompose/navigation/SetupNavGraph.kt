@@ -14,6 +14,7 @@ import com.example.bukuku_jpcompose.screen.ProfileScreen
 import com.example.bukuku_jpcompose.screen.RegisterScreen
 import com.example.bukuku_jpcompose.screen.ResultScreen
 import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
+import com.example.bukuku_jpcompose.screen.UpdateProfileScreen
 
 @Composable
 fun SetupNavGraph(
@@ -67,6 +68,11 @@ fun SetupNavGraph(
             ProfileScreen(navController)
         }
 
+        // Halaman Update Profile
+        composable(route = Screen.Update.route) {
+            UpdateProfileScreen(navController)
+        }
+
         // Halaman Login
         composable(route = Screen.Login.route) {
             LoginScreen(navController)
@@ -78,7 +84,7 @@ fun SetupNavGraph(
         }
 
         //Halaman CollectionScreen
-        composable(Screen.Collection.route) {
+        composable(route = Screen.Collection.route) {
             CollectionScreen(
                 navController = navController,
                 viewModel = viewModel,

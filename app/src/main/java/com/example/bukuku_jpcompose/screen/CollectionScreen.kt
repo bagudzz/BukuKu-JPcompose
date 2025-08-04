@@ -1,5 +1,6 @@
 package com.example.bukuku_jpcompose.screen
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,12 +71,22 @@ fun CollectionScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(collection) { book ->
-                    BookCard(book = book, onRemove = {
+                    BookCard(
+                        book = book,
+                        onRemove = {
                         scope.launch {
                             val t = PreferenceManager.getToken(context) ?: ""
                             viewModel.deleteFromCollection(book.id_book ?: "", t)
                         }
-                    })
+                    },
+                        onRead = {
+                            //Navigasi ke ResultScreen menggunakan data dari koleksi
+                            val idbook = Uri.encode(book.id_book)
+                            val title = Uri.encode(book.title)
+                            val desc = Uri.encode(book.description)
+                            val img = Uri.encode(book.thumbnail ?: "")
+                            navController.navigate("result/$idbook/$title/$desc/$img")
+                        })
                 }
             }
         }
@@ -83,7 +94,7 @@ fun CollectionScreen(
 }
 
 @Composable
-fun BookCard(book: CollectionBook, onRemove: () -> Unit) {
+fun BookCard(book: CollectionBook, onRemove: () -> Unit, onRead: () -> Unit) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -107,12 +118,22 @@ fun BookCard(book: CollectionBook, onRemove: () -> Unit) {
                 maxLines = 3
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = onRemove,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Hapus dari Koleksi")
+                Button(
+                    onClick = onRemove,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Hapus Koleksi")
+                }
+                Button(
+                    onClick = onRead,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Lanjut Baca")
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.bukuku_jpcompose.model.viewModel
 
+import android.media.session.MediaSession.Token
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -62,6 +63,7 @@ open class BooksViewModel : ViewModel() {
                 val response = CollectionApiClient.instance.addBookToCollection("Bearer $userToken", book)
                 println("DEBUG: Response code=${response.code()} body=${response.body()}")
                 if (response.isSuccessful){
+                    fetchCollection(userToken)
                     _getCollectionMessageState.value =  "Buku Berhasil Ditambahkan"
                 }else{
                     _getCollectionMessageState.value =  "Buku gagal ditambahkan"
