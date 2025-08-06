@@ -168,7 +168,6 @@ fun LoginScreen(navController: NavHostController) {
                                     Toast.makeText(context, "Gagal: $errorMessage", Toast.LENGTH_LONG).show()
                                 }
                             } catch (e: Exception) {
-                                // Tangani kesalahan (contoh: masalah jaringan)
                                 isLoading = false
                                 Toast.makeText(context, "Terjadi kesalahan: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                             }

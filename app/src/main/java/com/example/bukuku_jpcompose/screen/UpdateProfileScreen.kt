@@ -22,10 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.bukuku_jpcompose.model.request.UpdateProfileRequest
-import com.example.bukuku_jpcompose.model.viewModel.ProfileViewModel
+import com.example.bukuku_jpcompose.model.viewModel.UpdateProfileViewModel
+import com.example.bukuku_jpcompose.utils.FileUtils
 import com.example.bukuku_jpcompose.utils.PreferenceManager
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun UpdateProfileScreen(navController: NavController) {
@@ -37,7 +38,8 @@ fun UpdateProfileScreen(navController: NavController) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val viewModel: ProfileViewModel = viewModel()
+
+    val viewModel: UpdateProfileViewModel = viewModel()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -50,29 +52,24 @@ fun UpdateProfileScreen(navController: NavController) {
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Text(
-            text = "Update Profile",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.align(Alignment.Start)
-        )
+        Text("Update Profile", style = MaterialTheme.typography.titleLarge)
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //Edit foto profile
+            // ✅ Foto Profil
             Box(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF2196F3),
-                                Color(0xFF21CBF3)
-                            ) // Biru tua → biru muda
+                            listOf(Color(0xFF2196F3), Color(0xFF21CBF3))
                         )
                     ),
                 contentAlignment = Alignment.Center
@@ -88,44 +85,33 @@ fun UpdateProfileScreen(navController: NavController) {
                         .clickable { launcher.launch("image/*") }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //Form input
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nama Lengkap") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth()
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // ✅ Input Fields
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nama Lengkap") }, modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Username") }, modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ✅ Tombol Simpan
             Button(
                 onClick = {
                     scope.launch {
                         val token = PreferenceManager.getToken(context) ?: ""
-                        if (token.isNotEmpty()) {
-                            viewModel.updateProfile(
-                                token,
-                                UpdateProfileRequest(name, email, username)
-                            )
+                        val file: File? = selectedImageUri?.let { uri ->
+                            FileUtils.getFileFromUri(context, uri)   // 🔹 convert Uri -> File
+                        }
+                        viewModel.updateProfile(token, name, email, username, file)
+                        message = viewModel.messageState.value
+
+                        if (message.contains("success", ignoreCase = true)) {
+                            navController.popBackStack() // kembali ke screen sebelumnya
                         }
                     }
-                    message = "Profil berhasil diperbarui"
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -138,8 +124,9 @@ fun UpdateProfileScreen(navController: NavController) {
         }
     }
 }
-@Composable
+
 @Preview(showBackground = true)
+@Composable
 fun UpdateProfilePreview() {
     UpdateProfileScreen(navController = rememberNavController())
 }

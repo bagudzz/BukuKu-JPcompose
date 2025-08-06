@@ -3,9 +3,11 @@ package com.example.bukuku_jpcompose.screen
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -26,10 +28,13 @@ import com.example.bukuku_jpcompose.model.viewModel.BooksViewModel
 fun HomeScreen(navController: NavController,
                viewModel: BooksViewModel = viewModel()) {
 
-
     val books by viewModel.bukuState.collectAsState()
-    // 🔹 State untuk Search
+
+    // State untuk Search
     var searchQuery by remember { mutableStateOf("") }
+
+    // State untuk kategori
+    val categoriesList = listOf("Semua", "Fiksi", "Science", "Novel", "Drama", "Komik", "Biografi")
 
     LaunchedEffect(Unit) {
         viewModel.fetchBooks("all")
@@ -58,7 +63,34 @@ fun HomeScreen(navController: NavController,
                 }
             }
         )
+
         Spacer(modifier = Modifier.height(12.dp))
+
+        // Categories Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            categoriesList.forEach { category ->
+                Button(
+                    onClick = {
+                        val query = if (category == "Semua") "all" else category
+                        viewModel.fetchBooks(query)
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .height(36.dp),
+                    shape = MaterialTheme.shapes.small,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text(category, color = MaterialTheme.colorScheme.onPrimary)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
         if (books.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -83,6 +115,7 @@ fun HomeScreen(navController: NavController,
                 }
             }
         }
+
     }
 }
 

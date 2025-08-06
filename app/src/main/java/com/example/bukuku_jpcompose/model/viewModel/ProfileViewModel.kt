@@ -31,21 +31,4 @@ class ProfileViewModel : ViewModel() {
             }
         }
     }
-
-    // ✅ Update profile user
-    fun updateProfile(token: String, request: UpdateProfileRequest) {
-        viewModelScope.launch {
-            try {
-                val response = ApiClient.instance.updateProfile("Bearer $token", request)
-                if (response.isSuccessful) {
-                    _userState.value = response.body()?.data
-                    _messageState.value = "Profil berhasil diperbarui"
-                } else {
-                    _messageState.value = "Gagal update profil"
-                }
-            } catch (e: Exception) {
-                _messageState.value = "Error: ${e.message}"
-            }
-        }
-    }
 }

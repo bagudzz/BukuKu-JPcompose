@@ -6,12 +6,16 @@ import com.example.bukuku_jpcompose.model.request.UpdateProfileRequest
 import com.example.bukuku_jpcompose.model.response.LoginResponse
 import com.example.bukuku_jpcompose.model.response.RegisterResponse
 import com.example.bukuku_jpcompose.model.response.UserResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 
 interface ApiService {
 
@@ -41,11 +45,15 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<UserResponse>
 
-    // ✅ Update profile user
-    @PUT("api/user/profile")
+    // ✅ Update profile user (PUT + Multipart)
+    @Multipart
+    @PUT("api/update-profile")
     suspend fun updateProfile(
         @Header("Authorization") token: String,
-        @Body request: UpdateProfileRequest
+        @Part("nm_lengkap") nmLengkap: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part("username") username: RequestBody,
+        @Part foto: MultipartBody.Part?
     ): Response<UserResponse>
 
 }
